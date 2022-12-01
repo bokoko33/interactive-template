@@ -1,5 +1,6 @@
-import { SampleObject } from '~/js/webgl/SampleObject';
 import { Stage } from '~/js/webgl/Stage';
+import { ScreenPlane } from '~/js/webgl/ScreenPlane';
+import { Mouse2D } from '~/js/utils/Mouse2D';
 
 export class WebGL {
   constructor(props = {}) {
@@ -9,16 +10,20 @@ export class WebGL {
 
     const canvasWrapperEl = document.querySelector('.canvasWrapper');
     this.stage = new Stage({ wrapper: canvasWrapperEl });
-    this.sampleObject = new SampleObject();
-    this.stage.scene.add(this.sampleObject.mesh);
+
+    this.screenPlane = new ScreenPlane({ canvasSize: this.stage.canvasSize });
+    this.stage.scene.add(this.screenPlane.mesh);
 
     this.lastTime = this.getTime();
+
+    this.mouse = Mouse2D.instance;
+    console.log(this.mouse);
 
     if (this.selfLoop) {
       this.ticker();
     }
 
-    canvasWrapperEl.addEventListener('resize', this.resize);
+    window.addEventListener('resize', this.resize);
   }
 
   getTime = () => {
@@ -37,7 +42,12 @@ export class WebGL {
     const timScale = this.getTimeScale(deltaTime);
     this.lastTime = time;
 
-    this.sampleObject.update({ time, deltaTime, timScale });
+    this.screenPlane.update({
+      time,
+      deltaTime,
+      timScale,
+      mouse: this.mouse.normalizedPosition,
+    });
     this.stage.render();
 
     if (this.selfLoop) {
@@ -47,5 +57,7 @@ export class WebGL {
 
   resize = () => {
     this.stage.resize();
+
+    this.screenPlane.resize(this.stage.canvasSize);
   };
 }
