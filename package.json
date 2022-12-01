@@ -16,6 +16,8 @@
   },
   "dependencies": {
     "destyle.css": "^4.0.0",
+    "glsl-noise": "^0.0.0",
+    "glslify": "^7.1.1",
     "three": "^0.146.0"
   }
 }

@@ -7,6 +7,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 // --- ----
 
+// ref: https://zenn.dev/sakata_kazuma/articles/59a741489c8bbc
 export default defineConfig({
   server: {
     host: true,
@@ -15,7 +16,10 @@ export default defineConfig({
   root: './src',
   build: {
     base: './', // 相対パスでビルドする
-    outDir: '../dist', // 出力場所の指定
+    outDir: '../dist', // rootをsrcにしているので、出力場所を調整
+    rollupOptions: {
+      output: {},
+    },
   },
   resolve: {
     alias: {
