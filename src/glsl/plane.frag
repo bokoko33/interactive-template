@@ -27,11 +27,9 @@ void main() {
   vec2 center = vec2(0.5);
   vec2 mouse = uMouse * normalizeUvScale * 0.5 + center; // uMouseが-1.0 ~ 1.0 なので、uv座標に合わせて0.0 ~ 1.0に
 
-  vec3 texture = texture2D(uTexture, uv).rgb;
-
-  float circle = circle(uv, mouse, 0.1, 0.001) * snoise2(uv);
-
-  vec3 color = texture + circle;
+  float circle = circle(uv, mouse, 0.1, 0.1);
+  float noiseCircle = snoise2(uv * 2.0 + time * 0.1) * circle;
+  vec3 color = texture2D(uTexture, uv + noiseCircle).rgb;
 
   gl_FragColor = vec4(color, 1.0);
 }

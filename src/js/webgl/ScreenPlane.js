@@ -1,6 +1,6 @@
 import * as THREE from 'three';
-import vertexShader from '~/glsl/plane.vert?raw';
-import fragmentShader from '~/glsl/plane.frag?raw';
+import vertexShader from '~/glsl/plane.vert';
+import fragmentShader from '~/glsl/plane.frag';
 
 /**
  * canvas全体を覆うPlane Mesh

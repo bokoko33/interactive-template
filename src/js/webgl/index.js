@@ -1,5 +1,6 @@
 import { Stage } from '~/js/webgl/Stage';
 import { ScreenPlane } from '~/js/webgl/ScreenPlane';
+// import { SampleObject } from '~/js/webgl/SampleObject';
 import { Mouse2D } from '~/js/utils/Mouse2D';
 
 export class WebGL {
@@ -14,10 +15,12 @@ export class WebGL {
     this.screenPlane = new ScreenPlane({ canvasSize: this.stage.canvasSize });
     this.stage.scene.add(this.screenPlane.mesh);
 
+    // this.sample = new SampleObject();
+    // this.stage.scene.add(this.sample.mesh);
+
     this.lastTime = this.getTime();
 
     this.mouse = Mouse2D.instance;
-    console.log(this.mouse);
 
     if (this.selfLoop) {
       this.ticker();
@@ -48,6 +51,8 @@ export class WebGL {
       timScale,
       mouse: this.mouse.normalizedPosition,
     });
+    // this.sample.update({ deltaTime });
+
     this.stage.render();
 
     if (this.selfLoop) {

@@ -1,4 +1,5 @@
 import { defineConfig } from 'vite';
+import glslify from 'rollup-plugin-glslify';
 
 // --- ES Modulesで __dirname が使えないための対処 ---
 import path from 'path';
@@ -17,14 +18,11 @@ export default defineConfig({
   build: {
     base: './', // 相対パスでビルドする
     outDir: '../dist', // rootをsrcにしているので、出力場所を調整
-    rollupOptions: {
-      output: {},
-    },
   },
   resolve: {
     alias: {
       '~/': `${__dirname}/src/`,
     },
   },
-  plugins: [],
+  plugins: [glslify()],
 });

@@ -47,7 +47,7 @@ export class Stage {
     this.camera.fov = 45;
     this.camera.aspect = this.canvasSize.w / this.canvasSize.h;
     this.camera.near = 0.1;
-    this.camera.far = 1000;
+    this.camera.far = 10000;
 
     // canvasの画角ぴったりなカメラ距離の計算
     const fovRad = (this.camera.fov / 2) * (Math.PI / 180);
