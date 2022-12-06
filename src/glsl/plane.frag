@@ -3,9 +3,11 @@ precision mediump float;
 #pragma glslify: snoise2 = require(glsl-noise/simplex/2d)
 
 uniform float uTime;
+uniform float uProgress;
 uniform vec2 uMouse;
 uniform vec2 uResolution;
-uniform sampler2D uTexture;
+uniform sampler2D uTexture1;
+uniform sampler2D uTexture2;
 
 varying vec2 vUv;
 
@@ -29,7 +31,9 @@ void main() {
 
   float circle = circle(uv, mouse, 0.1, 0.1);
   float noiseCircle = snoise2(uv * 2.0 + time * 0.1) * circle;
-  vec3 color = texture2D(uTexture, uv + noiseCircle).rgb;
+  vec3 color1 = texture2D(uTexture1, uv + noiseCircle).rgb;
+  vec3 color2 = texture2D(uTexture2, uv + noiseCircle).rgb;
+  vec3 finalColor = mix(color1, color2, uProgress);
 
-  gl_FragColor = vec4(color, 1.0);
+  gl_FragColor = vec4(finalColor, 1.0);
 }
