@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import vertexShader from '~/glsl/plane.vert';
 import fragmentShader from '~/glsl/plane.frag';
-import { loadMultipleTexture } from '~/js/webgl/multipleTextureLoader';
+import { MultiTextureLoader } from '~/js/webgl/MultiTextureLoader';
 
 /**
  * canvas全体を覆うPlane Mesh
@@ -24,7 +24,8 @@ export class ScreenPlane {
     this.mesh = new THREE.Mesh(geometry, material);
 
     const texturePaths = ['/images/sample1.jpg', '/images/sample2.jpg'];
-    const textures = loadMultipleTexture(texturePaths).then((textures) => {
+    const loader = new MultiTextureLoader();
+    const textures = loader.load(texturePaths).then((textures) => {
       this.mesh.material.uniforms.uTexture.value = textures[1];
     });
   }
