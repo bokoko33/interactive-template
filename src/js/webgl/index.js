@@ -2,6 +2,7 @@ import { Stage } from '~/js/webgl/Stage';
 import { ScreenPlane } from '~/js/webgl/ScreenPlane';
 // import { SampleObject } from '~/js/webgl/SampleObject';
 import { Mouse2D } from '~/js/utils/Mouse2D';
+import Stats from 'stats.js';
 
 export class WebGL {
   constructor(props = {}) {
@@ -22,6 +23,9 @@ export class WebGL {
 
     this.mouse = Mouse2D.instance;
 
+    this.stats = new Stats();
+    document.body.appendChild(this.stats.dom);
+
     if (this.selfLoop) {
       this.ticker();
     }
@@ -40,6 +44,8 @@ export class WebGL {
   };
 
   ticker = () => {
+    this.stats.begin();
+
     const time = this.getTime();
     const deltaTime = time - this.lastTime;
     const timScale = this.getTimeScale(deltaTime);
@@ -54,6 +60,8 @@ export class WebGL {
     // this.sample.update({ deltaTime });
 
     this.stage.render();
+
+    this.stats.end();
 
     if (this.selfLoop) {
       this.rafId = window.requestAnimationFrame(this.ticker);
