@@ -65,4 +65,10 @@ export class WebGL {
 
     this.screenPlane.resize(this.stage.canvasSize);
   };
+
+  dispose = () => {
+    this.screenPlane.dispose();
+    this.stage.scene.remove(this.screenPlane);
+    this.stage.dispose();
+  };
 }

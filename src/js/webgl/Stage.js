@@ -77,4 +77,8 @@ export class Stage {
     this.setupRenderer();
     this.setupCamera();
   };
+
+  dispose = () => {
+    this.renderer?.dispose();
+  };
 }

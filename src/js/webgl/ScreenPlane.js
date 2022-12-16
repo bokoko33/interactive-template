@@ -47,4 +47,9 @@ export class ScreenPlane {
   resize = (size) => {
     this.mesh.material.uniforms.uResolution.value.set(size.w, size.h);
   };
+
+  dispose = () => {
+    this.mesh.geometry.dispose();
+    this.mesh.material.dispose();
+  };
 }
