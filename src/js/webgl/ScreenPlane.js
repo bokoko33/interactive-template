@@ -8,7 +8,6 @@ import GUI from 'lil-gui';
  */
 export class ScreenPlane {
   constructor({ canvasSize }) {
-    const loader = new THREE.TextureLoader();
     const geometry = new THREE.PlaneGeometry(2, 2);
     const material = new THREE.RawShaderMaterial({
       uniforms: {
@@ -16,8 +15,10 @@ export class ScreenPlane {
         uProgress: { value: 0 },
         uMouse: { value: new THREE.Vector2(0, 0) },
         uResolution: { value: new THREE.Vector2(canvasSize.w, canvasSize.h) },
-        uTexture1: { value: loader.load('/images/sample1.jpg') },
-        uTexture2: { value: loader.load('/images/sample2.jpg') },
+        uTexture1: { value: null },
+        uTexture1Aspect: { value: 1.0 },
+        uTexture2: { value: null },
+        uTexture2Aspect: { value: 1.0 },
       },
       vertexShader,
       fragmentShader,
@@ -25,6 +26,19 @@ export class ScreenPlane {
     });
 
     this.mesh = new THREE.Mesh(geometry, material);
+
+    // テクスチャとそのアスペクトを後から挿入
+    const loader = new THREE.TextureLoader();
+    loader.load('/images/sample1.jpg', (texture) => {
+      this.mesh.material.uniforms.uTexture1.value = texture;
+      this.mesh.material.uniforms.uTexture1Aspect.value =
+        texture.image.width / texture.image.height;
+    });
+    loader.load('/images/sample2.jpg', (texture) => {
+      this.mesh.material.uniforms.uTexture2.value = texture;
+      this.mesh.material.uniforms.uTexture2Aspect.value =
+        texture.image.width / texture.image.height;
+    });
 
     // 複数テクスチャを一括で扱いたい場合
     // const texturePaths = ['/images/sample1.jpg', '/images/sample2.jpg'];
