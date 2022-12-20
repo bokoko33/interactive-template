@@ -14,6 +14,16 @@ uniform float uTexture2Aspect;
 
 varying vec2 vUv;
 
+// 画像をobject-fit: cover 表示するためのuvを作る
+vec2 textureUv(vec2 uv, float aspect, float textureAspect) {
+  vec2 uvScale = vec2(
+    min(aspect / textureAspect, 1.0),
+    min((1.0 / aspect) / (1.0 / textureAspect), 1.0)
+  );
+
+  return (uv - 0.5) * uvScale + 0.5;
+}
+
 float circle(vec2 uv, vec2 pos, float r, float edge) {
  return 1.0 - smoothstep(r - edge * 0.5, r + edge * 0.5, length(uv - pos));
 }
@@ -23,20 +33,8 @@ void main() {
 
   float aspect = uResolution.x / uResolution.y;
 
-  // ---- 画像をobject-fit: cover 表示するためのuvを作る（2枚分） ----
-  vec2 textureUv1Scale = vec2(
-    min(aspect / uTexture1Aspect, 1.0),
-    min((1.0 / aspect) / (1.0 / uTexture1Aspect), 1.0)
-  );
-  vec2 texture1Uv = (vUv - 0.5) * textureUv1Scale + 0.5;
-
-  vec2 textureUv2Scale = vec2(
-    min(aspect / uTexture2Aspect, 1.0),
-    min((1.0 / aspect) / (1.0 / uTexture2Aspect), 1.0)
-  );
-  vec2 texture2Uv = (vUv - 0.5) * textureUv2Scale + 0.5;
-
-  // ---- ----
+  vec2 texture1Uv = textureUv(vUv, aspect, uTexture1Aspect);
+  vec2 texture2Uv = textureUv(vUv, aspect, uTexture2Aspect);
 
   // canvasの縦長or横長を判定して正規化したuv
   vec2 normalizeUvScale = vec2(min(aspect, 1.0), min(1.0 / aspect, 1.0));
