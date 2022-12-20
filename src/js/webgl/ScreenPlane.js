@@ -15,10 +15,18 @@ export class ScreenPlane {
         uProgress: { value: 0 },
         uMouse: { value: new THREE.Vector2(0, 0) },
         uResolution: { value: new THREE.Vector2(canvasSize.w, canvasSize.h) },
-        uTexture1: { value: null },
-        uTexture1Aspect: { value: 1.0 },
-        uTexture2: { value: null },
-        uTexture2Aspect: { value: 1.0 },
+        uTexture1: {
+          value: {
+            texture: null,
+            aspect: 1,
+          },
+        },
+        uTexture2: {
+          value: {
+            texture: null,
+            aspect: 1,
+          },
+        },
       },
       vertexShader,
       fragmentShader,
@@ -30,14 +38,12 @@ export class ScreenPlane {
     // テクスチャとそのアスペクトを後から挿入
     const loader = new THREE.TextureLoader();
     loader.load('/images/sample1.jpg', (texture) => {
-      this.mesh.material.uniforms.uTexture1.value = texture;
-      this.mesh.material.uniforms.uTexture1Aspect.value =
-        texture.image.width / texture.image.height;
+      const aspect = texture.image.width / texture.image.height;
+      this.mesh.material.uniforms.uTexture1.value = { texture, aspect };
     });
     loader.load('/images/sample2.jpg', (texture) => {
-      this.mesh.material.uniforms.uTexture2.value = texture;
-      this.mesh.material.uniforms.uTexture2Aspect.value =
-        texture.image.width / texture.image.height;
+      const aspect = texture.image.width / texture.image.height;
+      this.mesh.material.uniforms.uTexture2.value = { texture, aspect };
     });
 
     // 複数テクスチャを一括で扱いたい場合

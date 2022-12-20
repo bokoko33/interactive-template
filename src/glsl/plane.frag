@@ -2,15 +2,17 @@ precision mediump float;
 
 #pragma glslify: snoise2 = require(glsl-noise/simplex/2d)
 
+struct TextureData {
+  sampler2D texture;
+  float aspect;
+};
+
 uniform float uTime;
 uniform float uProgress;
 uniform vec2 uMouse;
 uniform vec2 uResolution;
-uniform sampler2D uTexture1;
-uniform float uTexture1Aspect;
-uniform sampler2D uTexture2;
-uniform float uTexture2Aspect;
-
+uniform TextureData uTexture1;
+uniform TextureData uTexture2;
 
 varying vec2 vUv;
 
@@ -33,8 +35,8 @@ void main() {
 
   float aspect = uResolution.x / uResolution.y;
 
-  vec2 texture1Uv = textureUv(vUv, aspect, uTexture1Aspect);
-  vec2 texture2Uv = textureUv(vUv, aspect, uTexture2Aspect);
+  vec2 texture1Uv = textureUv(vUv, aspect, uTexture1.aspect);
+  vec2 texture2Uv = textureUv(vUv, aspect, uTexture2.aspect);
 
   // canvasの縦長or横長を判定して正規化したuv
   vec2 normalizeUvScale = vec2(min(aspect, 1.0), min(1.0 / aspect, 1.0));
@@ -46,8 +48,8 @@ void main() {
   float circle = circle(normalizeUv, mouse, 0.1, 0.1);
   float noiseCircle = snoise2(normalizeUv * 2.0 + time * 0.1) * circle;
   
-  vec3 color1 = texture2D(uTexture1, texture1Uv + noiseCircle).rgb;
-  vec3 color2 = texture2D(uTexture2, texture2Uv + noiseCircle).rgb;
+  vec3 color1 = texture2D(uTexture1.texture, texture1Uv + noiseCircle).rgb;
+  vec3 color2 = texture2D(uTexture2.texture, texture2Uv + noiseCircle).rgb;
   vec3 finalColor = mix(color1, color2, uProgress);
 
   gl_FragColor = vec4(finalColor, 1.0);
