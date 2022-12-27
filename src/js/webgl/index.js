@@ -1,4 +1,3 @@
-import * as THREE from 'three';
 import Stats from 'stats.js';
 import { config } from '~/js/webgl/config';
 import { Stage } from '~/js/webgl/Stage';
@@ -7,6 +6,7 @@ import { ScreenPlane } from '~/js/webgl/ScreenPlane';
 import { Mouse2D } from '~/js/utils/Mouse2D';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { MouseDisplacement } from '~/js/webgl/MouseDisplacement';
+import { GLCanvas } from '~/js/webgl/GLCanvas';
 
 export class WebGL {
   constructor({ canvasWrapper, canvas, isDev = false, selfLoop = true }) {
@@ -15,19 +15,16 @@ export class WebGL {
     this.selfLoop = selfLoop; // rafループを外部ループに挿入するか、このclassで実行するか
     this.rafId = 0;
 
-    this.canvasWrapper = canvasWrapper;
-    this.canvas = canvas;
-
-    this.viewSize = this.getWrapperElementSize();
-
-    this.renderer = null;
-    this.setupRenderer({ viewSize: this.viewSize, canvas });
-
-    this.stage = new Stage({
-      viewSize: this.viewSize,
+    this.glCanvas = new GLCanvas({
+      wrapperEl: canvasWrapper,
+      el: canvas,
     });
 
-    this.screenPlane = new ScreenPlane({ viewSize: this.viewSize });
+    this.stage = new Stage({
+      viewSize: this.glCanvas.viewSize,
+    });
+
+    this.screenPlane = new ScreenPlane({ viewSize: this.glCanvas.viewSize });
     this.screenPlane.mesh.renderOrder = 1;
     this.stage.scene.add(this.screenPlane.mesh);
 
@@ -39,7 +36,7 @@ export class WebGL {
     this.mouse = Mouse2D.instance;
 
     this.mouseDisplacement = new MouseDisplacement({
-      viewSize: this.viewSize,
+      viewSize: this.glCanvas.viewSize,
     });
 
     if (this.selfLoop) {
@@ -57,17 +54,10 @@ export class WebGL {
       // OrbitControls
       this.controls = new OrbitControls(
         this.stage.camera,
-        this.renderer.domElement
+        this.glCanvas.renderer.domElement
       );
     }
   }
-
-  getWrapperElementSize = () => {
-    const width = this.canvasWrapper.clientWidth;
-    const height = this.canvasWrapper.clientHeight;
-
-    return { width, height };
-  };
 
   getTime = () => {
     return performance.now() * 0.001;
@@ -77,26 +67,6 @@ export class WebGL {
     // 60fpsを基準に時間経過のスケール値を返す
     // ex. 60fps → 1.0, 120fps → 0.5
     return deltaTime * 60;
-  };
-
-  setupRenderer = ({ viewSize, canvas }) => {
-    if (!this.renderer) {
-      this.renderer = new THREE.WebGLRenderer({ canvas });
-    }
-
-    this.renderer.setPixelRatio(window.devicePixelRatio);
-    this.renderer.setSize(viewSize.width, viewSize.height);
-  };
-
-  offscreenRender = (stage) => {
-    this.renderer.setRenderTarget(stage.renderTarget);
-    this.renderer.render(stage.scene, stage.camera);
-    this.renderer.setRenderTarget(null);
-    this.renderer.clear();
-  };
-
-  render = () => {
-    this.renderer.render(this.stage.scene, this.stage.camera);
   };
 
   ticker = () => {
@@ -110,7 +80,7 @@ export class WebGL {
     this.mouseDisplacement.update({
       mouse: this.mouse.relativePositionForGL,
     });
-    this.offscreenRender(this.mouseDisplacement.stage);
+    this.glCanvas.offscreenRender(this.mouseDisplacement.stage);
 
     this.screenPlane?.update({
       time,
@@ -119,9 +89,9 @@ export class WebGL {
       displacementTexture: this.mouseDisplacement.stage.renderTarget.texture,
       mouse: this.mouse.normalizedPosition,
     });
-    this.sample?.update({ deltaTime });
+    // this.sample?.update({ deltaTime });
 
-    this.render();
+    this.glCanvas.render(this.stage);
 
     this.stats?.end();
 
@@ -131,11 +101,11 @@ export class WebGL {
   };
 
   resize = () => {
-    const newSize = this.getWrapperElementSize();
-    this.stage.resize({ viewSize: newSize, canvas: this.canvas });
+    this.glCanvas.resize();
+    this.stage.resize(this.glCanvas.viewSize);
 
-    this.mouseDisplacement.resize(newSize);
-    this.screenPlane.resize(newSize);
+    this.mouseDisplacement.resize(this.glCanvas.viewSize);
+    this.screenPlane.resize(this.glCanvas.viewSize);
   };
 
   dispose = () => {

@@ -82,7 +82,7 @@ export class MouseDisplacement {
   };
 
   resize = (viewSize) => {
-    this.stage.resize({ viewSize });
+    this.stage.resize(viewSize);
   };
 
   dispose = (stage) => {
