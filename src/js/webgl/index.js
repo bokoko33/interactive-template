@@ -9,13 +9,14 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { MouseDisplacement } from '~/js/webgl/MouseDisplacement';
 
 export class WebGL {
-  constructor({ isDev = false, selfLoop = true }) {
-    this.selfLoop = selfLoop; // rafループを外部ループに挿入するか、このclassで実行するか
-    this.rafId = 0;
+  constructor({ canvasWrapper, canvas, isDev = false, selfLoop = true }) {
     config.isDev = isDev;
 
-    this.canvasWrapper = document.querySelector('.canvasWrapper');
-    this.canvas = this.canvasWrapper.querySelector('canvas');
+    this.selfLoop = selfLoop; // rafループを外部ループに挿入するか、このclassで実行するか
+    this.rafId = 0;
+
+    this.canvasWrapper = canvasWrapper;
+    this.canvas = canvas;
 
     this.viewSize = this.getWrapperElementSize();
 
