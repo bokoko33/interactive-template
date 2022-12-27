@@ -103,8 +103,10 @@ export class WebGL {
   };
 
   dispose = () => {
-    this.screenPlane.dispose();
-    this.stage.scene.remove(this.screenPlane);
+    this.screenPlane.dispose(this.stage);
+    this.mouseDisplacement.dispose(this.stage);
     this.stage.dispose();
+
+    window.removeEventListener('resize', this.resize);
   };
 }

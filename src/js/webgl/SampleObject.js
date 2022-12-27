@@ -2,16 +2,18 @@ import * as THREE from 'three';
 
 export class SampleObject {
   constructor() {
-    this.geometry = new THREE.BoxGeometry(100, 100, 100);
-    this.material = new THREE.MeshNormalMaterial();
-    this.mesh = new THREE.Mesh(this.geometry, this.material);
+    const geometry = new THREE.BoxGeometry(100, 100, 100);
+    const material = new THREE.MeshNormalMaterial();
+    this.mesh = new THREE.Mesh(geometry, material);
   }
 
   update = ({ deltaTime }) => {
     this.mesh.rotation.y += 2 * deltaTime;
   };
 
-  dispose = () => {
+  dispose = (stage) => {
+    stage.scene?.remove(this.mesh);
+
     this.mesh.geometry.dispose();
     this.mesh.material.dispose();
   };

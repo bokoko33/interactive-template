@@ -86,8 +86,11 @@ export class MouseDisplacement {
     this.stage.resize({ viewSize });
   };
 
-  dispose = () => {
-    this.mesh.geometry.dispose();
-    this.mesh.material.dispose();
+  dispose = (stage) => {
+    this.meshArray.forEach((mesh) => {
+      stage.remove(mesh);
+      mesh.geometry.dispose();
+      mesh.material.dispose();
+    });
   };
 }

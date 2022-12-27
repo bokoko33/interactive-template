@@ -106,5 +106,6 @@ export class Stage {
 
   dispose = () => {
     this.renderer?.dispose();
+    this.offScreenRenderTarget?.dispose();
   };
 }
