@@ -8,17 +8,17 @@ export class Stage {
    * @property {boolean} isOffscreen
    * @property {string} cameraType perspective | perspectiveFit | orthographic
    */
-  constructor({ viewSize, canvas, cameraType = 'perspectiveFit' }) {
+  constructor({
+    viewSize,
+    isOffscreen = false,
+    cameraType = 'perspectiveFit',
+  }) {
+    this.isOffscreen = isOffscreen;
     this.cameraType = cameraType;
-    this.isOffscreen = !canvas;
 
-    // renderer (onscreen only)
-    this.renderer = null;
-    this.setupRenderer({ viewSize, canvas });
-
-    // offscreen render target (offscreen only)
-    this.offScreenRenderTarget = null;
-    this.setupOffscreenRenderTarget(viewSize);
+    // offscreen render target
+    this.renderTarget = null;
+    this.setupRenderTarget(viewSize);
 
     // camera
     this.camera = null;
@@ -76,32 +76,18 @@ export class Stage {
     this.camera.updateProjectionMatrix();
   };
 
-  setupRenderer = ({ viewSize, canvas }) => {
-    if (!this.renderer) {
-      this.renderer = new THREE.WebGLRenderer({ canvas });
-    }
-
-    this.renderer.setPixelRatio(window.devicePixelRatio);
-    this.renderer.setSize(viewSize.width, viewSize.height);
-  };
-
-  setupOffscreenRenderTarget = (viewSize) => {
+  setupRenderTarget = (viewSize) => {
     if (!this.isOffscreen) return;
 
-    if (!this.offScreenRenderTarget) {
-      this.offScreenRenderTarget = new THREE.WebGLRenderTarget();
+    if (!this.renderTarget) {
+      this.renderTarget = new THREE.WebGLRenderTarget();
     }
 
-    this.offScreenRenderTarget.setSize(viewSize.width, viewSize.height);
+    this.renderTarget.setSize(viewSize.width, viewSize.height);
   };
 
-  render = () => {
-    this.renderer.render(this.scene, this.camera);
-  };
-
-  resize = ({ viewSize, canvas }) => {
-    this.setupRenderer({ viewSize, canvas });
-    this.setupOffscreenRenderTarget(viewSize);
+  resize = (viewSize) => {
+    this.setupRenderTarget(viewSize);
     this.setupCamera(viewSize);
   };
 

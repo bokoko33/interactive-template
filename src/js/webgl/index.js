@@ -1,10 +1,10 @@
+import * as THREE from 'three';
 import Stats from 'stats.js';
 import { config } from '~/js/webgl/config';
 import { Stage } from '~/js/webgl/Stage';
 import { ScreenPlane } from '~/js/webgl/ScreenPlane';
 // import { SampleObject } from '~/js/webgl/SampleObject';
 import { Mouse2D } from '~/js/utils/Mouse2D';
-
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { MouseDisplacement } from '~/js/webgl/MouseDisplacement';
 
@@ -20,10 +20,11 @@ export class WebGL {
 
     this.viewSize = this.getWrapperElementSize();
 
+    this.renderer = null;
+    this.setupRenderer({ viewSize: this.viewSize, canvas });
+
     this.stage = new Stage({
       viewSize: this.viewSize,
-      canvas: this.canvas,
-      // cameraType: 'perspective',
     });
 
     this.screenPlane = new ScreenPlane({ viewSize: this.viewSize });
@@ -56,7 +57,7 @@ export class WebGL {
       // OrbitControls
       this.controls = new OrbitControls(
         this.stage.camera,
-        this.stage.renderer.domElement
+        this.renderer.domElement
       );
     }
   }
@@ -78,6 +79,26 @@ export class WebGL {
     return deltaTime * 60;
   };
 
+  setupRenderer = ({ viewSize, canvas }) => {
+    if (!this.renderer) {
+      this.renderer = new THREE.WebGLRenderer({ canvas });
+    }
+
+    this.renderer.setPixelRatio(window.devicePixelRatio);
+    this.renderer.setSize(viewSize.width, viewSize.height);
+  };
+
+  offscreenRender = (stage) => {
+    this.renderer.setRenderTarget(stage.renderTarget);
+    this.renderer.render(stage.scene, stage.camera);
+    this.renderer.setRenderTarget(null);
+    this.renderer.clear();
+  };
+
+  render = () => {
+    this.renderer.render(this.stage.scene, this.stage.camera);
+  };
+
   ticker = () => {
     this.stats?.begin();
 
@@ -87,21 +108,20 @@ export class WebGL {
     this.lastTime = time;
 
     this.mouseDisplacement.update({
-      gl: this.stage.renderer,
       mouse: this.mouse.relativePositionForGL,
     });
+    this.offscreenRender(this.mouseDisplacement.stage);
 
     this.screenPlane?.update({
       time,
       deltaTime,
       timScale,
-      displacementTexture:
-        this.mouseDisplacement.stage.offScreenRenderTarget.texture,
+      displacementTexture: this.mouseDisplacement.stage.renderTarget.texture,
       mouse: this.mouse.normalizedPosition,
     });
     this.sample?.update({ deltaTime });
 
-    this.stage.render();
+    this.render();
 
     this.stats?.end();
 

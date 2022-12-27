@@ -4,7 +4,11 @@ import { Stage } from '~/js/webgl/Stage';
 
 export class MouseDisplacement {
   constructor({ viewSize }) {
-    this.stage = new Stage({ viewSize, cameraType: 'orthographic' });
+    this.stage = new Stage({
+      viewSize,
+      isOffscreen: true,
+      cameraType: 'orthographic',
+    });
 
     this.current = 0;
     this.max = 2000;
@@ -60,13 +64,8 @@ export class MouseDisplacement {
     }
   };
 
-  update = ({ gl, mouse }) => {
+  update = ({ mouse }) => {
     this.setNewMesh(mouse);
-
-    gl.setRenderTarget(this.stage.offScreenRenderTarget);
-    gl.render(this.stage.scene, this.stage.camera);
-    gl.setRenderTarget(null);
-    gl.clear();
 
     this.meshArray.forEach((mesh) => {
       if (!mesh.visible) return;
