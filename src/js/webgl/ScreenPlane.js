@@ -1,7 +1,8 @@
 import * as THREE from 'three';
 import vertexShader from '~/glsl/plane.vert';
 import fragmentShader from '~/glsl/plane.frag';
-import GUI from 'lil-gui';
+import { GUI } from '~/js/utils/GUI';
+import { config } from '~/js/webgl/config';
 
 /**
  * canvas全体を覆うPlane Mesh
@@ -55,11 +56,12 @@ export class ScreenPlane {
     //   // 全部読み込まれた後
     // });
 
-    // たとえばuProgress.valueを更新したい場合、第一引数がobject, 第二引数がプロパティ（文字列）になる
-    const gui = new GUI();
-    gui
-      .add(this.mesh.material.uniforms.uProgress, 'value', 0.0, 1.0, 0.01)
-      .name('progress');
+    if (config.isDev) {
+      // たとえばuProgress.valueを更新したい場合、第一引数がobject, 第二引数がプロパティ（文字列）になる
+      GUI.instance
+        .add(this.mesh.material.uniforms.uProgress, 'value', 0.0, 1.0, 0.01)
+        .name('progress');
+    }
   }
 
   update = ({ time, mouse, displacementTexture }) => {

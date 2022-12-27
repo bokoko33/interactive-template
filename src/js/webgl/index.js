@@ -1,15 +1,18 @@
+import Stats from 'stats.js';
+import { config } from '~/js/webgl/config';
 import { Stage } from '~/js/webgl/Stage';
 import { ScreenPlane } from '~/js/webgl/ScreenPlane';
 // import { SampleObject } from '~/js/webgl/SampleObject';
 import { Mouse2D } from '~/js/utils/Mouse2D';
-import Stats from 'stats.js';
+
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { MouseDisplacement } from '~/js/webgl/MouseDisplacement';
 
 export class WebGL {
-  constructor({ selfLoop = true }) {
-    // rafループを外部ループに挿入するか、このclassで実行するか
-    this.selfLoop = selfLoop;
+  constructor({ isDev = false, selfLoop = true }) {
+    this.selfLoop = selfLoop; // rafループを外部ループに挿入するか、このclassで実行するか
     this.rafId = 0;
+    config.isDev = isDev;
 
     this.canvasWrapper = document.querySelector('.canvasWrapper');
     this.canvas = this.canvasWrapper.querySelector('canvas');
@@ -35,14 +38,24 @@ export class WebGL {
       viewSize: this.viewSize,
     });
 
-    this.stats = new Stats();
-    document.body.appendChild(this.stats.dom);
-
     if (this.selfLoop) {
       this.ticker();
     }
 
     window.addEventListener('resize', this.resize);
+
+    // development mode
+    if (isDev) {
+      // stats.js
+      this.stats = new Stats();
+      document.body.appendChild(this.stats.dom);
+
+      // OrbitControls
+      this.controls = new OrbitControls(
+        this.stage.camera,
+        this.stage.renderer.domElement
+      );
+    }
   }
 
   getWrapperElementSize = () => {
@@ -63,7 +76,7 @@ export class WebGL {
   };
 
   ticker = () => {
-    this.stats.begin();
+    this.stats?.begin();
 
     const time = this.getTime();
     const deltaTime = time - this.lastTime;
@@ -87,7 +100,7 @@ export class WebGL {
 
     this.stage.render();
 
-    this.stats.end();
+    this.stats?.end();
 
     if (this.selfLoop) {
       this.rafId = window.requestAnimationFrame(this.ticker);

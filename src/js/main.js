@@ -3,7 +3,7 @@ import '~/css/style.css';
 import { WebGL } from '~/js/webgl';
 
 const initWebGL = () => {
-  new WebGL({ selfLoop: true });
+  new WebGL({ isDev: true, selfLoop: true });
 };
 
 document.addEventListener('DOMContentLoaded', initWebGL);

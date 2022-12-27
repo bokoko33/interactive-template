@@ -1,5 +1,4 @@
 import * as THREE from 'three';
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 
 export class Stage {
   /**
@@ -27,9 +26,6 @@ export class Stage {
 
     // scene
     this.scene = new THREE.Scene();
-
-    // plugins
-    this.controls = new OrbitControls(this.camera, this.renderer.domElement);
   }
 
   setupCamera = (viewSize) => {
