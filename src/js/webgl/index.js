@@ -6,15 +6,22 @@ import Stats from 'stats.js';
 import { MouseDisplacement } from '~/js/webgl/MouseDisplacement';
 
 export class WebGL {
-  constructor(props = {}) {
+  constructor({ selfLoop = true }) {
     // rafループを外部ループに挿入するか、このclassで実行するか
-    this.selfLoop = props.selfLoop ?? true;
+    this.selfLoop = selfLoop;
     this.rafId = 0;
 
-    const canvasWrapperEl = document.querySelector('.canvasWrapper');
-    this.stage = new Stage({ wrapper: canvasWrapperEl });
+    this.canvasWrapper = document.querySelector('.canvasWrapper');
+    this.canvas = this.canvasWrapper.querySelector('canvas');
 
-    this.screenPlane = new ScreenPlane({ canvasSize: this.stage.canvasSize });
+    this.viewSize = this.getWrapperElementSize();
+
+    this.stage = new Stage({
+      viewSize: this.viewSize,
+      canvas: this.canvas,
+    });
+
+    this.screenPlane = new ScreenPlane({ viewSize: this.viewSize });
     this.stage.scene.add(this.screenPlane.mesh);
 
     // this.sample = new SampleObject();
@@ -25,7 +32,7 @@ export class WebGL {
     this.mouse = Mouse2D.instance;
 
     this.mouseDisplacement = new MouseDisplacement({
-      canvasSize: this.stage.canvasSize,
+      viewSize: this.viewSize,
     });
 
     this.stats = new Stats();
@@ -37,6 +44,13 @@ export class WebGL {
 
     window.addEventListener('resize', this.resize);
   }
+
+  getWrapperElementSize = () => {
+    const width = this.canvasWrapper.clientWidth;
+    const height = this.canvasWrapper.clientHeight;
+
+    return { width, height };
+  };
 
   getTime = () => {
     return performance.now() * 0.001;
@@ -65,7 +79,8 @@ export class WebGL {
       time,
       deltaTime,
       timScale,
-      displacementTexture: this.mouseDisplacement.target.texture,
+      displacementTexture:
+        this.mouseDisplacement.stage.offScreenRenderTarget.texture,
       mouse: this.mouse.normalizedPosition,
     });
     // this.sample.update({ deltaTime });
@@ -80,10 +95,11 @@ export class WebGL {
   };
 
   resize = () => {
-    this.stage.resize();
+    const newSize = this.getWrapperElementSize();
+    this.stage.resize({ viewSize: newSize, canvas: this.canvas });
 
-    this.mouseDisplacement.resize(this.stage.canvasSize);
-    this.screenPlane.resize(this.stage.canvasSize);
+    this.mouseDisplacement.resize(newSize);
+    this.screenPlane.resize(newSize);
   };
 
   dispose = () => {

@@ -7,14 +7,16 @@ import GUI from 'lil-gui';
  * canvas全体を覆うPlane Mesh
  */
 export class ScreenPlane {
-  constructor({ canvasSize }) {
+  constructor({ viewSize }) {
     const geometry = new THREE.PlaneGeometry(2, 2);
     const material = new THREE.RawShaderMaterial({
       uniforms: {
         uTime: { value: 0 },
         uProgress: { value: 0 },
         uMouse: { value: new THREE.Vector2(0, 0) },
-        uResolution: { value: new THREE.Vector2(canvasSize.w, canvasSize.h) },
+        uResolution: {
+          value: new THREE.Vector2(viewSize.width, viewSize.height),
+        },
         uTexture1: {
           value: {
             texture: null,
@@ -67,8 +69,11 @@ export class ScreenPlane {
     this.mesh.material.uniforms.uMouse.value.set(mouse.x, mouse.y);
   };
 
-  resize = (size) => {
-    this.mesh.material.uniforms.uResolution.value.set(size.w, size.h);
+  resize = (viewSize) => {
+    this.mesh.material.uniforms.uResolution.value.set(
+      viewSize.width,
+      viewSize.height
+    );
   };
 
   dispose = () => {

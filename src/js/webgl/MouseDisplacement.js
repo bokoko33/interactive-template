@@ -1,15 +1,10 @@
 import * as THREE from 'three';
 import EMath from '~/js/utils/EMath';
+import { Stage } from '~/js/webgl/Stage';
 
 export class MouseDisplacement {
-  constructor({ canvasSize }) {
-    this.scene = new THREE.Scene();
-    this.target = new THREE.WebGLRenderTarget(canvasSize.w, canvasSize.h);
-    // camera
-    const { w, h, near, far } = this.cameraProps(canvasSize);
-    this.camera = new THREE.OrthographicCamera(-w, w, h, -h, near, far);
-
-    this.camera.position.set(0, 0, 2);
+  constructor({ viewSize }) {
+    this.stage = new Stage({ viewSize, cameraType: 'orthographic' });
 
     this.current = 0;
     this.max = 2000;
@@ -18,13 +13,6 @@ export class MouseDisplacement {
 
     this.prevMouse = new THREE.Vector2(0, 0);
   }
-
-  cameraProps = (size) => {
-    const frustumSize = size.h;
-    const aspect = size.w / size.h;
-    const [w, h] = [(frustumSize * aspect) / 2, frustumSize / 2];
-    return { w, h, near: -1000, far: 1000 };
-  };
 
   setNewMesh = (mouse) => {
     const moveLength = mouse.distanceTo(this.prevMouse);
@@ -67,7 +55,7 @@ export class MouseDisplacement {
     for (let i = 0; i < this.max; i++) {
       const mesh = new THREE.Mesh(geometry, material.clone());
       mesh.visible = false;
-      this.scene.add(mesh);
+      this.stage.scene.add(mesh);
       this.meshArray.push(mesh);
     }
   };
@@ -75,8 +63,8 @@ export class MouseDisplacement {
   update = ({ gl, mouse }) => {
     this.setNewMesh(mouse);
 
-    gl.setRenderTarget(this.target);
-    gl.render(this.scene, this.camera);
+    gl.setRenderTarget(this.stage.offScreenRenderTarget);
+    gl.render(this.stage.scene, this.stage.camera);
     gl.setRenderTarget(null);
     gl.clear();
 
@@ -92,19 +80,10 @@ export class MouseDisplacement {
     });
 
     this.prevMouse.set(mouse.x, mouse.y);
-
-    return this.target.texture;
   };
 
-  resize = (size) => {
-    const { w, h } = this.cameraProps(size);
-
-    this.camera.left = -w;
-    this.camera.right = w;
-    this.camera.top = h;
-    this.camera.bottom = -h;
-    this.camera.updateProjectionMatrix();
-    this.target.setSize(size.w, size.h);
+  resize = (viewSize) => {
+    this.stage.resize({ viewSize });
   };
 
   dispose = () => {
