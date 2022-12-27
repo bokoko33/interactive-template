@@ -44,7 +44,6 @@ export class Stage {
     this.camera.near = 0.1;
     this.camera.far = 5000;
 
-    console.log(this.cameraType);
     if (this.cameraType === 'perspectiveFit') {
       // canvasの画角ぴったりなカメラ距離の計算
       const fovRad = (this.camera.fov / 2) * (Math.PI / 180);
