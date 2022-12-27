@@ -35,6 +35,8 @@ export class ScreenPlane {
       vertexShader,
       fragmentShader,
       transparent: false,
+      depthTest: false,
+      depthWrite: false,
     });
 
     this.mesh = new THREE.Mesh(geometry, material);

@@ -23,9 +23,11 @@ export class WebGL {
     this.stage = new Stage({
       viewSize: this.viewSize,
       canvas: this.canvas,
+      // cameraType: 'perspective',
     });
 
     this.screenPlane = new ScreenPlane({ viewSize: this.viewSize });
+    this.screenPlane.mesh.renderOrder = 1;
     this.stage.scene.add(this.screenPlane.mesh);
 
     // this.sample = new SampleObject();
@@ -89,7 +91,7 @@ export class WebGL {
       mouse: this.mouse.relativePositionForGL,
     });
 
-    this.screenPlane.update({
+    this.screenPlane?.update({
       time,
       deltaTime,
       timScale,
@@ -97,7 +99,7 @@ export class WebGL {
         this.mouseDisplacement.stage.offScreenRenderTarget.texture,
       mouse: this.mouse.normalizedPosition,
     });
-    // this.sample.update({ deltaTime });
+    this.sample?.update({ deltaTime });
 
     this.stage.render();
 
@@ -117,7 +119,8 @@ export class WebGL {
   };
 
   dispose = () => {
-    this.screenPlane.dispose(this.stage);
+    this.sample?.dispose(this.stage);
+    this.screenPlane?.dispose(this.stage);
     this.mouseDisplacement.dispose(this.stage);
     this.stage.dispose();
 

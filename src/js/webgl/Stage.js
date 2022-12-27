@@ -42,12 +42,18 @@ export class Stage {
     this.camera.fov = 45;
     this.camera.aspect = viewSize.width / viewSize.height;
     this.camera.near = 0.1;
-    this.camera.far = 10000;
+    this.camera.far = 5000;
 
-    // canvasの画角ぴったりなカメラ距離の計算
-    const fovRad = (this.camera.fov / 2) * (Math.PI / 180);
-    const dist = viewSize.height / 2 / Math.tan(fovRad);
-    this.camera.position.z = dist;
+    console.log(this.cameraType);
+    if (this.cameraType === 'perspectiveFit') {
+      // canvasの画角ぴったりなカメラ距離の計算
+      const fovRad = (this.camera.fov / 2) * (Math.PI / 180);
+      const dist = viewSize.height / 2 / Math.tan(fovRad);
+      this.camera.position.z = dist;
+    } else {
+      // 任意の距離
+      this.camera.position.z = 300;
+    }
 
     this.camera.updateProjectionMatrix();
   };
