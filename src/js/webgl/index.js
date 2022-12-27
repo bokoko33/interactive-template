@@ -3,6 +3,7 @@ import { ScreenPlane } from '~/js/webgl/ScreenPlane';
 // import { SampleObject } from '~/js/webgl/SampleObject';
 import { Mouse2D } from '~/js/utils/Mouse2D';
 import Stats from 'stats.js';
+import { MouseDisplacement } from '~/js/webgl/MouseDisplacement';
 
 export class WebGL {
   constructor(props = {}) {
@@ -22,6 +23,10 @@ export class WebGL {
     this.lastTime = this.getTime();
 
     this.mouse = Mouse2D.instance;
+
+    this.mouseDisplacement = new MouseDisplacement({
+      canvasSize: this.stage.canvasSize,
+    });
 
     this.stats = new Stats();
     document.body.appendChild(this.stats.dom);
@@ -51,10 +56,16 @@ export class WebGL {
     const timScale = this.getTimeScale(deltaTime);
     this.lastTime = time;
 
+    this.mouseDisplacement.update({
+      gl: this.stage.renderer,
+      mouse: this.mouse.relativePositionForGL,
+    });
+
     this.screenPlane.update({
       time,
       deltaTime,
       timScale,
+      displacementTexture: this.mouseDisplacement.target.texture,
       mouse: this.mouse.normalizedPosition,
     });
     // this.sample.update({ deltaTime });
@@ -71,6 +82,7 @@ export class WebGL {
   resize = () => {
     this.stage.resize();
 
+    this.mouseDisplacement.resize(this.stage.canvasSize);
     this.screenPlane.resize(this.stage.canvasSize);
   };
 

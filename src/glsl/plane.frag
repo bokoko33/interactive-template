@@ -13,6 +13,7 @@ uniform vec2 uMouse;
 uniform vec2 uResolution;
 uniform TextureData uTexture1;
 uniform TextureData uTexture2;
+uniform sampler2D uDisplacementTexture;
 
 varying vec2 vUv;
 
@@ -47,9 +48,12 @@ void main() {
 
   float circle = circle(normalizeUv, mouse, 0.1, 0.1);
   float noiseCircle = snoise2(normalizeUv * 2.0 + time * 0.1) * circle;
+
+  vec4 displace = texture2D(uDisplacementTexture, vUv);
+  float displaceValue = displace.r * snoise2(normalizeUv * 5.0 + time);
   
-  vec3 color1 = texture2D(uTexture1.texture, texture1Uv + noiseCircle).rgb;
-  vec3 color2 = texture2D(uTexture2.texture, texture2Uv + noiseCircle).rgb;
+  vec3 color1 = texture2D(uTexture1.texture, texture1Uv + displaceValue).rgb;
+  vec3 color2 = texture2D(uTexture2.texture, texture2Uv + displaceValue).rgb;
   vec3 finalColor = mix(color1, color2, uProgress);
 
   gl_FragColor = vec4(finalColor, 1.0);

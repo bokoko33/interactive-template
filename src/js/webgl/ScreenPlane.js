@@ -27,6 +27,7 @@ export class ScreenPlane {
             aspect: 1,
           },
         },
+        uDisplacementTexture: { value: null },
       },
       vertexShader,
       fragmentShader,
@@ -59,9 +60,11 @@ export class ScreenPlane {
       .name('progress');
   }
 
-  update = ({ time, mouse }) => {
+  update = ({ time, mouse, displacementTexture }) => {
     this.mesh.material.uniforms.uTime.value = time;
-    this.mesh.material.uniforms.uMouse.value.set(mouse.x, -mouse.y);
+    this.mesh.material.uniforms.uDisplacementTexture.value =
+      displacementTexture;
+    this.mesh.material.uniforms.uMouse.value.set(mouse.x, mouse.y);
   };
 
   resize = (size) => {

@@ -25,7 +25,7 @@ export class Mouse2D {
   get normalizedPosition() {
     return new Vector2(
       (this._relativePosition.x / window.innerWidth) * 2 - 1,
-      (this._relativePosition.y / window.innerHeight) * 2 - 1
+      -((this._relativePosition.y / window.innerHeight) * 2 - 1)
     );
   }
 
@@ -36,7 +36,7 @@ export class Mouse2D {
   get relativePositionForGL() {
     return new Vector2(
       this._relativePosition.x - window.innerWidth / 2,
-      this._relativePosition.y - window.innerHeight / 2
+      -(this._relativePosition.y - window.innerHeight / 2)
     );
   }
 
