@@ -1,22 +1,16 @@
 import * as THREE from 'three';
-import vertexShader from '~/glsl/plane.vert';
-import fragmentShader from '~/glsl/plane.frag';
+import vertexShader from '~/glsl/SampleScreen.vert';
+import fragmentShader from '~/glsl/SampleScreen.frag';
 import { GUI } from '~/js/utils/GUI';
 import { config } from '~/js/webgl/config';
 
 /**
  * canvas全体を覆うPlane Mesh
- *
- * 2×2サイズで座標変換を行わずにcanvasにフィットさせる方法と、
- * 座標変換を行いつつcanvasにフィットするサイズに変形する方法の両方に対応。
- *
+ * 主にfragmentShaderでサッと何かする用
  */
-export class ScreenPlane {
-  constructor({ viewSize, isTransformed = false }) {
-    this.isTransformed = isTransformed;
-
-    const defaultSize = isTransformed ? 1 : 2;
-    const geometry = new THREE.PlaneGeometry(defaultSize, defaultSize);
+export class SampleScreen {
+  constructor({ viewSize }) {
+    const geometry = new THREE.PlaneGeometry(2, 2);
     const material = new THREE.ShaderMaterial({
       uniforms: {
         uTime: { value: 0 },
@@ -37,8 +31,6 @@ export class ScreenPlane {
             aspect: 1,
           },
         },
-        uDisplacementTexture: { value: null },
-        uIsTransformed: { value: isTransformed },
       },
       vertexShader,
       fragmentShader,
@@ -74,20 +66,16 @@ export class ScreenPlane {
     }
   }
 
-  update = ({ time, mouse, displacementTexture }) => {
+  update = ({ time, mouse }) => {
     this.mesh.material.uniforms.uTime.value = time;
-    this.mesh.material.uniforms.uDisplacementTexture.value =
-      displacementTexture;
     this.mesh.material.uniforms.uMouse.value.set(mouse.x, mouse.y);
   };
 
-  resize = ({ screenSize, viewSize }) => {
-    const size = this.isTransformed ? screenSize : viewSize;
-    if (this.isTransformed) {
-      this.mesh.scale.set(size.width, size.height, 1);
-    }
-
-    this.mesh.material.uniforms.uResolution.value.set(size.width, size.height);
+  resize = (viewSize) => {
+    this.mesh.material.uniforms.uResolution.value.set(
+      viewSize.width,
+      viewSize.height
+    );
   };
 
   dispose = (stage) => {
