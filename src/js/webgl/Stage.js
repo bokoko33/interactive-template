@@ -8,11 +8,7 @@ export class Stage {
    * @property {boolean} isOffscreen
    * @property {string} cameraType perspective | perspectiveFit | orthographic
    */
-  constructor({
-    viewSize,
-    isOffscreen = false,
-    cameraType = 'perspectiveFit',
-  }) {
+  constructor({ viewSize, isOffscreen = false, cameraType = 'perspective' }) {
     this.isOffscreen = isOffscreen;
     this.cameraType = cameraType;
 
