@@ -43,7 +43,7 @@ export class WebGL {
     // render scene
     this.stage = new Stage({
       viewSize: viewSize,
-      cameraType: 'perspectiveFit',
+      cameraType: 'perspective',
     });
 
     const screenGeo = new THREE.PlaneGeometry(2, 2);
