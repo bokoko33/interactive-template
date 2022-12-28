@@ -82,6 +82,16 @@ export class Stage {
     this.renderTarget.setSize(viewSize.width, viewSize.height);
   };
 
+  // カメラの距離と視野角から、画面にフィットするスクリーンのサイズを計算する
+  calcScreenSize = () => {
+    const camera = this.camera;
+    const fovRadian = (camera.fov / 2) * (Math.PI / 180);
+    const screenHeight = camera.position.z * Math.tan(fovRadian) * 2;
+    const screenWidth = screenHeight * camera.aspect;
+
+    return { width: screenWidth, height: screenHeight };
+  };
+
   resize = (viewSize) => {
     this.setupRenderTarget(viewSize);
     this.setupCamera(viewSize);

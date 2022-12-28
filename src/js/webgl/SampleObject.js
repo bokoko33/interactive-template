@@ -8,7 +8,7 @@ export class SampleObject {
   }
 
   update = ({ deltaTime }) => {
-    this.mesh.rotation.y += 2 * deltaTime;
+    this.mesh.rotation.y += 0.6 * deltaTime;
   };
 
   dispose = (stage) => {

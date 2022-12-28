@@ -1,9 +1,9 @@
-attribute vec3 position;
-attribute vec2 uv;
+uniform bool uIsTransformed;
+
 varying vec2 vUv;
 
 void main() {
   vUv = uv;
 
-  gl_Position = vec4(position, 1.0);
+  gl_Position = uIsTransformed ? projectionMatrix * modelViewMatrix * vec4(position, 1.0) : vec4(position, 1.0);
 }

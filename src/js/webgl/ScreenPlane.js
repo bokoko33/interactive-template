@@ -6,11 +6,18 @@ import { config } from '~/js/webgl/config';
 
 /**
  * canvas全体を覆うPlane Mesh
+ *
+ * 2×2サイズで座標変換を行わずにcanvasにフィットさせる方法と、
+ * 座標変換を行いつつcanvasにフィットするサイズに変形する方法の両方に対応。
+ *
  */
 export class ScreenPlane {
-  constructor({ viewSize }) {
-    const geometry = new THREE.PlaneGeometry(2, 2);
-    const material = new THREE.RawShaderMaterial({
+  constructor({ viewSize, isTransformed = false }) {
+    this.isTransformed = isTransformed;
+
+    const defaultSize = isTransformed ? 1 : 2;
+    const geometry = new THREE.PlaneGeometry(defaultSize, defaultSize);
+    const material = new THREE.ShaderMaterial({
       uniforms: {
         uTime: { value: 0 },
         uProgress: { value: 0 },
@@ -31,6 +38,7 @@ export class ScreenPlane {
           },
         },
         uDisplacementTexture: { value: null },
+        uIsTransformed: { value: isTransformed },
       },
       vertexShader,
       fragmentShader,
@@ -73,11 +81,13 @@ export class ScreenPlane {
     this.mesh.material.uniforms.uMouse.value.set(mouse.x, mouse.y);
   };
 
-  resize = (viewSize) => {
-    this.mesh.material.uniforms.uResolution.value.set(
-      viewSize.width,
-      viewSize.height
-    );
+  resize = ({ screenSize, viewSize }) => {
+    const size = this.isTransformed ? screenSize : viewSize;
+    if (this.isTransformed) {
+      this.mesh.scale.set(size.width, size.height, 1);
+    }
+
+    this.mesh.material.uniforms.uResolution.value.set(size.width, size.height);
   };
 
   dispose = (stage) => {

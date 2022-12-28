@@ -2,7 +2,7 @@ import Stats from 'stats.js';
 import { config } from '~/js/webgl/config';
 import { Stage } from '~/js/webgl/Stage';
 import { ScreenPlane } from '~/js/webgl/ScreenPlane';
-// import { SampleObject } from '~/js/webgl/SampleObject';
+import { SampleObject } from '~/js/webgl/SampleObject';
 import { Mouse2D } from '~/js/utils/Mouse2D';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { MouseDisplacement } from '~/js/webgl/MouseDisplacement';
@@ -22,14 +22,22 @@ export class WebGL {
 
     this.stage = new Stage({
       viewSize: this.glCanvas.viewSize,
+      cameraType: 'perspectiveFit',
     });
 
-    this.screenPlane = new ScreenPlane({ viewSize: this.glCanvas.viewSize });
-    this.screenPlane.mesh.renderOrder = 1;
+    this.screenPlane = new ScreenPlane({
+      viewSize: this.glCanvas.viewSize,
+      // isTransformed: true,
+    });
+    this.screenPlane.resize({
+      viewSize: this.glCanvas.viewSize,
+      screenSize: this.stage.calcScreenSize(),
+    });
+
     this.stage.scene.add(this.screenPlane.mesh);
 
-    // this.sample = new SampleObject();
-    // this.stage.scene.add(this.sample.mesh);
+    this.sample = new SampleObject();
+    this.stage.scene.add(this.sample.mesh);
 
     this.lastTime = this.getTime();
 
@@ -89,7 +97,7 @@ export class WebGL {
       displacementTexture: this.mouseDisplacement.stage.renderTarget.texture,
       mouse: this.mouse.normalizedPosition,
     });
-    // this.sample?.update({ deltaTime });
+    this.sample?.update({ deltaTime });
 
     this.glCanvas.render(this.stage);
 
@@ -105,7 +113,10 @@ export class WebGL {
     this.stage.resize(this.glCanvas.viewSize);
 
     this.mouseDisplacement.resize(this.glCanvas.viewSize);
-    this.screenPlane.resize(this.glCanvas.viewSize);
+    this.screenPlane.resize({
+      viewSize: this.glCanvas.viewSize,
+      screenSize: this.stage.calcScreenSize(),
+    });
   };
 
   dispose = () => {
