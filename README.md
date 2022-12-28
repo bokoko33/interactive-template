@@ -1,1 +1,8 @@
 # Three.js Simple Template with Vite
+
+```
+git clone git@github.com:bokoko33/three-template.git
+git remote remove origin
+npm ci
+npm run dev
+```
