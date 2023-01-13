@@ -14,10 +14,20 @@ export default defineConfig({
     host: true,
     port: 3000,
   },
-  root: './src',
+  base: './', // 相対パスでビルドする
+  root: 'src/pages', // 開発モードのroot
+  // root: './src',
+  // publicDir: path.resolve(__dirname, 'src/public'),
   build: {
-    base: './', // 相対パスでビルドする
-    outDir: '../dist', // rootをsrcにしているので、出力場所を調整
+    // manifest: true,
+    outDir: path.resolve(__dirname, 'dist'),
+    emptyOutDir: true,
+    rollupOptions: {
+      input: {
+        '': path.resolve(__dirname, 'src/pages/index.html'),
+        sample01: path.resolve(__dirname, 'src/pages/sample01/index.html'),
+      },
+    },
   },
   resolve: {
     alias: {

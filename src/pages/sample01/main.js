@@ -1,5 +1,4 @@
-import 'destyle.css';
-import '~/css/style.css';
+import '~/js/common';
 import { WebGL } from '~/js/webgl';
 
 const initWebGL = () => {
