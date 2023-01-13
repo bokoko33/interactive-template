@@ -1,6 +1,6 @@
 import * as THREE from 'three';
-import EMath from '~/js/utils/EMath';
-import { Stage } from '~/js/webgl/Stage';
+import EMath from '../utils/EMath';
+import { Stage } from './Stage';
 
 export class MouseDisplacement {
   constructor({ viewSize }) {

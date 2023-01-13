@@ -1,15 +1,16 @@
+// ページ作成の際にごっそり複製するので相対パスの方が都合が良い
 import * as THREE from 'three';
 import Stats from 'stats.js';
-import { config } from '~/js/webgl/config';
-import { Stage } from '~/js/webgl/Stage';
-import { SampleScreen } from '~/js/webgl/SampleScreen';
-import { SampleObject } from '~/js/webgl/SampleObject';
-import { Mouse2D } from '~/js/utils/Mouse2D';
+import { config } from '../config';
+import { Stage } from './Stage';
+import { SampleScreen } from './SampleScreen';
+import { SampleObject } from './SampleObject';
+import { Mouse2D } from '../utils/Mouse2D';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
-import { MouseDisplacement } from '~/js/webgl/MouseDisplacement';
-import { GLCanvas } from '~/js/webgl/GLCanvas';
-import screenVertexShader from '~/glsl/screen.vert';
-import screenFragmentShader from '~/glsl/screen.frag';
+import { MouseDisplacement } from './MouseDisplacement';
+import { GLCanvas } from './GLCanvas';
+import screenVertexShader from '../../glsl/screen.vert';
+import screenFragmentShader from '../../glsl/screen.frag';
 
 export class WebGL {
   constructor({ canvasWrapper, canvas, isDev = false, selfLoop = true }) {
@@ -108,7 +109,7 @@ export class WebGL {
 
     const time = this.getTime();
     const deltaTime = time - this.lastTime;
-    const timeScale = this.getTimeScale(deltaTime);
+    // const timeScale = this.getTimeScale(deltaTime);
     this.lastTime = time;
 
     // off render
