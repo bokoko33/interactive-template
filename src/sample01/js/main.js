@@ -1,4 +1,4 @@
-import '~/common/js/common';
+import '~/_common/js/common';
 import { WebGL } from './webgl';
 
 const initWebGL = () => {

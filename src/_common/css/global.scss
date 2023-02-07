@@ -1,3 +1,15 @@
+@use './variables.scss' as *;
+
+img {
+  width: 100%;
+  height: auto;
+}
+
+svg {
+  width: 100%;
+  height: auto;
+}
+
 .canvasWrapper {
   position: fixed;
   width: 100%;

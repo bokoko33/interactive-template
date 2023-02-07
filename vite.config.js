@@ -13,8 +13,9 @@ export default defineConfig({
     host: true,
     port: 3000,
   },
-  // base: './', // 相対パスでビルドする
+  base: './', // 相対パスでビルドする
   root: 'src', // 開発モードのroot
+  publicDir: '_public',
   build: {
     // manifest: true,
     outDir: path.resolve(__dirname, 'dist'),
@@ -22,6 +23,7 @@ export default defineConfig({
     rollupOptions: {
       input: {
         '': path.resolve(__dirname, 'src/index.html'),
+        'dom-sample': path.resolve(__dirname, 'src/dom-sample/index.html'),
         sample01: path.resolve(__dirname, 'src/sample01/index.html'),
       },
     },

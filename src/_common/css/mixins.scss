@@ -1,0 +1,14 @@
+@use './variables.scss' as *;
+
+// media query
+@mixin mq($size: md) {
+  @media screen and (max-width: #{map-get($breakpoints, $size)}) {
+    @content;
+  }
+}
+
+@mixin mq_min($size: md) {
+  @media not all and (max-width: #{map-get($breakpoints, $size)}) {
+    @content;
+  }
+}
