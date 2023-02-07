@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import EMath from '../utils/EMath';
+import EMath from '~/_lib/EMath';
 import { Stage } from './Stage';
 
 export class MouseDisplacement {

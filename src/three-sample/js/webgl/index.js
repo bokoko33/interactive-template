@@ -1,21 +1,19 @@
 // ページ作成の際にごっそり複製するので相対パスの方が都合が良い
 import * as THREE from 'three';
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import Stats from 'stats.js';
-import { config } from '../config';
 import { Stage } from './Stage';
 import { SampleScreen } from './SampleScreen';
 import { SampleObject } from './SampleObject';
-import { Mouse2D } from '../utils/Mouse2D';
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { MouseDisplacement } from './MouseDisplacement';
 import { GLCanvas } from './GLCanvas';
 import screenVertexShader from '../../glsl/screen.vert';
 import screenFragmentShader from '../../glsl/screen.frag';
+import { Mouse2D } from '~/_lib/Mouse2D';
+import { config } from '~/_lib/config';
 
 export class WebGL {
-  constructor({ canvasWrapper, canvas, isDev = false, selfLoop = true }) {
-    config.isDev = isDev;
-
+  constructor({ canvasWrapper, canvas, selfLoop = true }) {
     this.selfLoop = selfLoop; // rafループを外部ループに挿入するか、このclassで実行するか
     this.rafId = 0;
 
@@ -81,7 +79,7 @@ export class WebGL {
     window.addEventListener('resize', this.resize);
 
     // development mode
-    if (isDev) {
+    if (config.isDev) {
       // stats.js
       this.stats = new Stats();
       document.body.appendChild(this.stats.dom);

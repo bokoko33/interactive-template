@@ -1,8 +1,8 @@
 import * as THREE from 'three';
 import vertexShader from '../../glsl/SampleScreen.vert';
 import fragmentShader from '../../glsl/SampleScreen.frag';
-import { GUI } from '../utils/GUI';
-import { config } from '../config';
+import { GUI } from '~/_lib/GUI';
+import { config } from '~/_lib/config';
 
 /**
  * canvas全体を覆うPlane Mesh

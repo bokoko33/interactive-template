@@ -24,7 +24,7 @@ export default defineConfig({
       input: {
         '': path.resolve(__dirname, 'src/index.html'),
         'dom-sample': path.resolve(__dirname, 'src/dom-sample/index.html'),
-        sample01: path.resolve(__dirname, 'src/sample01/index.html'),
+        'three-sample': path.resolve(__dirname, 'src/three-sample/index.html'),
       },
     },
   },
