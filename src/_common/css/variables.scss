@@ -7,3 +7,6 @@ $breakpoints: (
 );
 
 $color-black: #1e1e1e;
+
+$ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+$ease-out-quint: cubic-bezier(0.22, 1, 0.36, 1);
