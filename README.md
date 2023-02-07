@@ -1,4 +1,5 @@
-# Three.js Simple Template with Vite
+# Web Interactive Template with Vite
+Web制作用モック開発テンプレート。Three.jsとgsapを導入済み。
 
 ```
 git clone git@github.com:bokoko33/three-template.git
