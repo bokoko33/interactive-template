@@ -77,11 +77,4 @@ export class SampleScreen {
       viewSize.height
     );
   };
-
-  dispose = (stage) => {
-    stage.scene?.remove(this.mesh);
-
-    this.mesh.geometry.dispose();
-    this.mesh.material.dispose();
-  };
 }

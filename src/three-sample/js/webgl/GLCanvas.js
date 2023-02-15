@@ -27,15 +27,15 @@ export class GLCanvas {
     this.renderer.setSize(this.viewSize.width, this.viewSize.height);
   };
 
-  offscreenRender = (stage) => {
-    this.renderer.setRenderTarget(stage.renderTarget);
-    this.renderer.render(stage.scene, stage.camera);
+  offscreenRender = ({ renderTarget, scene, camera }) => {
+    this.renderer.setRenderTarget(renderTarget);
+    this.renderer.render(scene, camera);
     this.renderer.setRenderTarget(null);
     this.renderer.clear();
   };
 
-  render = (stage) => {
-    this.renderer.render(stage.scene, stage.camera);
+  render = ({ scene, camera }) => {
+    this.renderer.render(scene, camera);
   };
 
   resize = () => {

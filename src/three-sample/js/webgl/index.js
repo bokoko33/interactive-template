@@ -1,16 +1,17 @@
 // ページ作成の際にごっそり複製するので相対パスの方が都合が良い
 import * as THREE from 'three';
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import Stats from 'stats.js';
-import { Stage } from './Stage';
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { SampleScreen } from './SampleScreen';
 import { SampleObject } from './SampleObject';
 import { MouseDisplacement } from './MouseDisplacement';
 import { GLCanvas } from './GLCanvas';
-import screenVertexShader from '../../glsl/screen.vert';
-import screenFragmentShader from '../../glsl/screen.frag';
+import { CameraOrthographic } from './CameraOrthographic';
+import { CameraPerspective } from './CameraPerspective';
 import { Mouse2D } from '~/_lib/Mouse2D';
 import { config } from '~/_lib/config';
+import screenVertexShader from '../../glsl/screen.vert';
+import screenFragmentShader from '../../glsl/screen.frag';
 
 export class WebGL {
   constructor({ canvasWrapper, canvas, selfLoop = true }) {
@@ -24,27 +25,32 @@ export class WebGL {
 
     const { viewSize } = this.glCanvas;
 
-    // offscreen
-    this.offStage = new Stage({
-      viewSize: viewSize,
-      cameraType: 'perspective',
-      isOffscreen: true,
-    });
+    // cameras
+    this.pCamera = new CameraPerspective({ viewSize });
+    this.pCamera.position.z = 300; // canvas fitさせない場合の任意値
+    this.oCamera = new CameraOrthographic({ viewSize, type: 'orthographic' });
 
-    this.sampleBg = new SampleScreen({
-      viewSize: viewSize,
-    });
-    this.offStage.scene.add(this.sampleBg.mesh);
-
+    // sample scene (offscreen)
+    this.sampleScene = new THREE.Scene();
+    this.sampleFBO = new THREE.WebGLRenderTarget(
+      viewSize.width,
+      viewSize.height
+    );
+    this.sampleBg = new SampleScreen({ viewSize });
     this.sampleObj = new SampleObject();
-    this.offStage.scene.add(this.sampleObj.mesh);
+    this.sampleScene.add(this.sampleBg.mesh, this.sampleObj.mesh);
+
+    // mouse displace scene (offscreen)
+    this.displaceSene = new THREE.Scene();
+    this.displace = new MouseDisplacement({ viewSize });
+    this.displaceFBO = new THREE.WebGLRenderTarget(
+      viewSize.width,
+      viewSize.height
+    );
+    this.displaceSene.add(...this.displace.meshArray);
 
     // render scene
-    this.stage = new Stage({
-      viewSize: viewSize,
-      cameraType: 'perspective',
-    });
-
+    this.scene = new THREE.Scene();
     const screenGeo = new THREE.PlaneGeometry(2, 2);
     const screenMat = new THREE.ShaderMaterial({
       uniforms: {
@@ -62,15 +68,11 @@ export class WebGL {
       depthWrite: false,
     });
     this.screenMesh = new THREE.Mesh(screenGeo, screenMat);
-    this.stage.scene.add(this.screenMesh);
+    this.scene.add(this.screenMesh);
 
+    // utils
     this.lastTime = this.getTime();
-
     this.mouse = Mouse2D.instance;
-
-    this.mouseDisplacement = new MouseDisplacement({
-      viewSize: this.glCanvas.viewSize,
-    });
 
     if (this.selfLoop) {
       this.ticker();
@@ -86,7 +88,7 @@ export class WebGL {
 
       // OrbitControls
       this.controls = new OrbitControls(
-        this.stage.camera,
+        this.pCamera,
         this.glCanvas.renderer.domElement
       );
     }
@@ -110,24 +112,32 @@ export class WebGL {
     // const timeScale = this.getTimeScale(deltaTime);
     this.lastTime = time;
 
-    // off render
+    // render sample scene (offscreen)
     this.sampleBg.update({ time, mouse: this.mouse.normalizedPosition });
     this.sampleObj.update({ deltaTime });
-    this.glCanvas.offscreenRender(this.offStage);
+    this.glCanvas.offscreenRender({
+      renderTarget: this.sampleFBO,
+      scene: this.sampleScene,
+      camera: this.pCamera,
+    });
 
-    this.mouseDisplacement.update({
+    // render displace scene (offscreen)
+    this.displace.update({
       mouse: this.mouse.relativePositionForGL,
     });
-    this.glCanvas.offscreenRender(this.mouseDisplacement.stage);
+    this.glCanvas.offscreenRender({
+      renderTarget: this.displaceFBO,
+      scene: this.displaceSene,
+      camera: this.oCamera,
+    });
 
-    // main render
+    // render output scene
     const screenUniforms = this.screenMesh.material.uniforms;
     screenUniforms.uTime.value = time;
-    screenUniforms.uSceneTexture.value = this.offStage.renderTarget.texture;
-    screenUniforms.uDisplacementTexture.value =
-      this.mouseDisplacement.stage.renderTarget.texture;
+    screenUniforms.uSceneTexture.value = this.sampleFBO.texture;
+    screenUniforms.uDisplacementTexture.value = this.displaceFBO.texture;
 
-    this.glCanvas.render(this.stage);
+    this.glCanvas.render({ scene: this.scene, camera: this.pCamera });
 
     this.stats?.end();
 
@@ -140,25 +150,21 @@ export class WebGL {
     this.glCanvas.resize();
     const newSize = this.glCanvas.viewSize;
 
-    this.stage.resize(newSize);
+    this.pCamera.setSize(newSize);
+    this.oCamera.setSize(newSize);
 
-    this.mouseDisplacement.resize(newSize);
+    this.sampleFBO.setSize(newSize.width, newSize.height);
+    this.displaceFBO.setSize(newSize.width, newSize.height);
 
     this.sampleBg.resize(newSize);
-
-    this.mesh.material.uniforms.uResolution.value.set(
-      newSize.width,
-      newSize.height
-    );
   };
 
   dispose = () => {
-    this.sampleBg.dispose(this.stage);
-    this.sampleObj.dispose(this.stage);
+    // TODO: three.jsのdispose処理
 
-    this.mouseDisplacement.dispose(this.stage);
-    this.stage.dispose();
-
+    if (this.selfLoop) {
+      window.cancelAnimationFrame(this.rafId);
+    }
     window.removeEventListener('resize', this.resize);
   };
 }

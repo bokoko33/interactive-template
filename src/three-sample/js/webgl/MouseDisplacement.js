@@ -1,15 +1,9 @@
 import * as THREE from 'three';
 import EMath from '~/_lib/EMath';
-import { Stage } from './Stage';
 
+// 個別にscene, camera,
 export class MouseDisplacement {
-  constructor({ viewSize }) {
-    this.stage = new Stage({
-      viewSize,
-      isOffscreen: true,
-      cameraType: 'orthographic',
-    });
-
+  constructor() {
     this.current = 0;
     this.max = 2000;
     this.meshArray = [];
@@ -59,7 +53,6 @@ export class MouseDisplacement {
     for (let i = 0; i < this.max; i++) {
       const mesh = new THREE.Mesh(geometry, material.clone());
       mesh.visible = false;
-      this.stage.scene.add(mesh);
       this.meshArray.push(mesh);
     }
   };
@@ -79,17 +72,5 @@ export class MouseDisplacement {
     });
 
     this.prevMouse.set(mouse.x, mouse.y);
-  };
-
-  resize = (viewSize) => {
-    this.stage.resize(viewSize);
-  };
-
-  dispose = (stage) => {
-    this.meshArray.forEach((mesh) => {
-      stage.remove(mesh);
-      mesh.geometry.dispose();
-      mesh.material.dispose();
-    });
   };
 }

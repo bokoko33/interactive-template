@@ -10,11 +10,4 @@ export class SampleObject {
   update = ({ deltaTime }) => {
     this.mesh.rotation.y += 0.6 * deltaTime;
   };
-
-  dispose = (stage) => {
-    stage.scene?.remove(this.mesh);
-
-    this.mesh.geometry.dispose();
-    this.mesh.material.dispose();
-  };
 }
