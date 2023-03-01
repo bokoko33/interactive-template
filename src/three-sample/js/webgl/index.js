@@ -28,7 +28,7 @@ export class WebGL {
     // cameras
     this.pCamera = new CameraPerspective({ viewSize });
     this.pCamera.position.z = 300; // canvas fitさせない場合の任意値
-    this.oCamera = new CameraOrthographic({ viewSize, type: 'orthographic' });
+    this.oCamera = new CameraOrthographic({ viewSize });
 
     // sample scene (offscreen)
     this.sampleScene = new THREE.Scene();
