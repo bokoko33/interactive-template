@@ -63,12 +63,13 @@ export class Slider {
 
     this.slider.on('change', this.handleSliderChange);
     this.slider.on('update', this.handleSliderUpdate);
-
-    this.isSliderChanging = false;
   }
 
   handleSliderChange = () => {
     const { uniforms } = this.mesh.material;
+
+    // nextのscaleを初期化
+    uniforms.uNext.value.scale = DEFAULT_SCALE;
 
     // 動画なら最初から再生する
     if (uniforms.uNext.value.texture.isVideoTexture) {
@@ -79,9 +80,6 @@ export class Slider {
       value: 1,
       duration: 0.8,
       ease: 'none',
-      onStart: () => {
-        this.isSliderChanging = true;
-      },
       onComplete: () => {
         this.setImageUniform();
         uniforms.uProgress.value = 0;
@@ -90,8 +88,6 @@ export class Slider {
         // 切り替わり直後にその時点までのscaleを入れ替える
         uniforms.uCurrent.value.scale = uniforms.uNext.value.scale;
         uniforms.uNext.value.scale = DEFAULT_SCALE; // こっちは初期化
-
-        this.isSliderChanging = false;
       },
     });
   };
@@ -102,10 +98,8 @@ export class Slider {
       ((60 / gsap.ticker.deltaRatio()) * SLIDER_INTERVAL);
     this.mesh.material.uniforms.uCurrent.value.scale -= scaleValue;
 
-    // スライダー切り替わり中はnextも動かしてなめらかに切り替える
-    if (this.isSliderChanging) {
-      this.mesh.material.uniforms.uNext.value.scale -= scaleValue;
-    }
+    // nextも動かして、切り替え時にscaleをなめらかにつなげる
+    this.mesh.material.uniforms.uNext.value.scale -= scaleValue;
   };
 
   setImageUniform = () => {
